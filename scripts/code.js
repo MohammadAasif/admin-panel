@@ -1,56 +1,51 @@
+var busesArray = [];
+var collegeID = "cbit";
+
 $(document).ready(
     function(){
-        //alert("Suck my balls");
-
-            loadAll();
+            loadAllBuses(collegeID);
     }
-
-
-    //
-    
 );
 
 
-function loadAll(){
-    
-    var data ={
-        clgId : "cbit"
-};
+function loadAllBuses(){
+    busesArray = [];
+    let payloadData ={
+        clgId : collegeID
+    };
 
-
-
-$.ajax({
-    type: "POST",
-    url: "https://irg0ytx6yf.execute-api.ap-south-1.amazonaws.com/v1/getbuses",
-    data: JSON.stringify(data),
-    success: function(data){
-        console.log("Success");
-        console.log(data);
- 
-
-        fillTheBusesList(data.data);
-    },
-    error: function(err){
-        console.log("Error");
-        console.log(err);
+    $.ajax({
+        type: "POST",
+        url: "https://irg0ytx6yf.execute-api.ap-south-1.amazonaws.com/v1/getbuses",
+        dataType: "json",
+        data: JSON.stringify(payloadData),
+        success: function(data){
+            console.log("=====Success=====");
+            console.log(data);
+            busesArray = busesArray.concat(data.data); //the response has an array "data" containing the buses list
+            console.log("==============");
+            console.log(busesArray);
+            fillTheBusesList(); 
+        },
+        error: function(err){
+            console.log("=====Error=====");
+            console.log(err);
+        }
+        
+    });
     }
-    ,
-    dataType: "json"
-  });
-}
 
 
 
-function fillTheBusesList(busesList){
+function fillTheBusesList(){
     
     $("#busesList").empty();
-    console.log(busesList);
-    
-    for(bus in busesList){
+
+    for(bus in busesArray){
         let appender = "";
         
-        let busId =  busesList[bus].id;
-        let busName = busesList[bus].name;
+        let busId =  busesArray[bus].id;
+        let busName = busesArray[bus].name;
         
         appender+= `
         <li class="list-group-item" >
@@ -79,43 +74,49 @@ function fillTheBusesList(busesList){
     `;
 
     $("#busesList").append(plusButton);
-    $("li").css({"cursor":"pointer"});
 
+
+    $("li").css({"cursor":"pointer"}); //making the cursor as HAND (pointer) for list items 
+
+    /*
+        modal is displayed on clicking the last item i.e the virtual plus button
+    */
     $('#plusButton').click(function(){
         $('#addBusModal').modal();
     });
     
-    
 }
 
-
+//called when bus is tried to be added
 function addBus(){
 
-    $("#addBusModal .close").click()
-    
-    
+    $("#addBusModal .close").click(); //forcibly close the modal then perform the task
 
     let busName = ""+ $("#busNameInput").val();
 
-    let data ={
-        clgId: "cbit",
+    let payloadData ={
+        clgId: collegeID, //GLOBAL COLLEGE ID
         name: busName
     };
 
+    /*
+        POST request with payload to add the bus
+    */
     $.ajax({
         type: "POST",
         url: "https://irg0ytx6yf.execute-api.ap-south-1.amazonaws.com/v1/addbus",
-        data: JSON.stringify(data),
+        data: JSON.stringify(payloadData),
+        dataType: "json",
         success: function(data){
-            console.log("================SECOND API CALL=======");
+            console.log("=====Success=====");
             console.log(data);
-            loadAll();
+            loadAllBuses();
         },
         error: function(err){
+            console.log("=====Error=====");
             console.log(err);
         }
-        ,
-        dataType: "json"
+        
       });
 
 }
