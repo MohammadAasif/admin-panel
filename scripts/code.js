@@ -1,5 +1,7 @@
 var busesArray = [];
 var collegeID = "cbit";
+var selectedBusId ="";
+var selectedBusName ="";
 
 $(document).ready(
     function(){
@@ -59,6 +61,7 @@ function fillTheBusesList(){
 
         $("#busesList").append(appender);
 
+
         
     }
 
@@ -77,7 +80,29 @@ function fillTheBusesList(){
 
 
     $("li").css({"cursor":"pointer"}); //making the cursor as HAND (pointer) for list items 
+    $('ul li').hover(
+        function(){$(this).find('h3').css('color','#f00');},
+        function(){$(this).find('h3').css('color','#000');}
+      );
 
+    $('ul li').click(
+        
+        
+
+        function(){
+
+            if($(this).is(":last-child")){
+                    return;
+                }
+
+            console.log($(this).find('h5').text());
+            $("#busInfoId").text("Bus ID: " + $(this).find('h5').text());
+            selectedBusId = $(this).find('h5').text();
+            $("#busInfoName").text("Bus Name: " + $(this).find('h3').text());
+            selectedBusName = $(this).find('h3').text();
+
+        }
+    );
     /*
         modal is displayed on clicking the last item i.e the virtual plus button
     */
@@ -119,4 +144,16 @@ function addBus(){
         
       });
 
+}
+
+
+function editToRoute(){
+    window.location = './test.html?direction=to&id='+selectedBusId+'&name='+selectedBusName;
+    //window.location = './map.html?direction=to&id='+selectedBusId+'&name='+selectedBusName;
+
+}
+
+
+function editFroRoute(){
+    window.location = './map.html?direction=fro&id='+selectedBusId+'&name='+selectedBusName;
 }
